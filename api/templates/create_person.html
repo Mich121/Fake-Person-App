@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+</br>
+<h1 style="width: 70%; height: 70%; margin-left: auto; margin-right: auto; color: #28a745;">Render some fake data</h1>
+</br>
+<div class="form-group" style="width: 70%; height: 70%; margin-left: auto; margin-right: auto;"> 
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+<button class="btn btn-success" style="color: white;">Add Person</button>
+</div>
+
+{% endblock content %}
