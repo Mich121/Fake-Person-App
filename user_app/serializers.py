@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 #register serializer in drf
@@ -38,4 +39,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+
+    def validate_username(self, value):
+        if len(value) < 3:
+            raise serializers.ValidationError('Username is too short!')
 

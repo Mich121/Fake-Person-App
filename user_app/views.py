@@ -1,4 +1,3 @@
-import re
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, serializers
@@ -9,6 +8,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from user_app import models
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from rest_framework.status import (HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK)
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 class UserCreate(generics.CreateAPIView):
@@ -38,8 +40,21 @@ def registration_view(request):
         else:
             data = serializer.errors
 
-        return Response(data)
+        return Response(data, status=status.HTTP_201_CREATED)
 
+
+#@csrf_exempt
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login_view(request):
+    username = request.data["username"]
+    password = request.data["password"]
+    if username is None or password is None:
+        return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
+    token = Token.objects.get(user__username=username)
+    return Response({'token': token.key}, status=HTTP_200_OK)
+
+###################################
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def registration_JWT_view(request):

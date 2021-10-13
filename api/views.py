@@ -1,4 +1,4 @@
-from rest_framework import generics, viewsets
+from rest_framework import generics, permissions, viewsets
 from django.views import generic
 from django.shortcuts import get_object_or_404
 from .serializers import PersonSerializer, PersonOnlineSerializer
@@ -6,6 +6,8 @@ from .models import Person, PersonOnlineData
 from .forms import PersonCreateForm
 import requests, json
 from django.urls import reverse
+from rest_framework import filters
+from .pagination import PeopleListAPIPagination
 
 # Create your views here.
 class Home(generic.TemplateView):
@@ -41,6 +43,9 @@ class PersonCreate(generic.CreateView):
 class PersonListAPI(generics.ListAPIView):
     serializer_class = PersonSerializer
     queryset = Person.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'surname']
+    pagination_class = PeopleListAPIPagination
 
 class PersonDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PersonSerializer
@@ -52,6 +57,8 @@ class PersonDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 class PersonVS(viewsets.ReadOnlyModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['age']
 
 class PersonOnlineListAPI(generics.RetrieveAPIView):
     serializer_class = PersonOnlineSerializer
